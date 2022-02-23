@@ -172,3 +172,53 @@
 
 // obj.name = 'abc' // readonly 会报错
 // console.log(obj);
+
+
+
+// 装饰器全局异常管理
+// const ErrorDecorator: MethodDecorator = (...args: any[]) => {
+//     const method = args[2].value
+//     args[2].value = () => {
+//         try {
+//             method()
+//         }catch(error: any) {
+//             console.log(`%c${error.message}`,"font-size:16px;color:red;");
+//         }
+//     }
+// }
+
+// class User{
+//     @ErrorDecorator
+//     find() {
+//         throw new Error('用户未找到')
+//     }
+
+//     @ErrorDecorator
+//     fail() {
+//         throw new Error('出错啦')
+//     }
+// }
+
+// new User().find()
+// new User().fail()
+
+
+
+// 装饰器工厂定制console.log 
+// const ConsoleDecoratorFactory = (content: string = 'default content', fontSize: number = 14):MethodDecorator => {
+//     return (...args: any[]) => {
+//         const method = args[2].value
+//         args[2].value = () => {
+//             console.log(`%c${content}`,`font-size:${fontSize}px;color:red;`)
+//         }
+//     }
+// }
+// class User {
+//     @ConsoleDecoratorFactory('this is a new content', 30)
+//     test() {
+//         console.log('hello world');
+//     }
+// }
+// new User().test()
+
+
