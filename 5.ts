@@ -222,3 +222,65 @@
 // new User().test()
 
 
+
+// 装饰器模拟网络请求
+// const RequestDecoratorFactory = (url: string): MethodDecorator => {
+//     return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//         let method = descriptor.value
+//         new Promise<any[]>(resolve => {
+//             setTimeout(() => {
+//                 resolve([{name: 'abc'}, {name: 'ddd'}])
+//             }, 2000);
+//         }).then(res => {
+//             method(`${url}返回结果${res.toString}`)
+//         })
+//     }
+// }
+
+// class User {
+//     @RequestDecoratorFactory('https://www.baidu.com')
+//     public all(users: any) {
+//         console.log(users);
+//     }
+// }
+
+
+
+// // 属性装饰器
+// const PropDecorator: PropertyDecorator = (...args: any[]) => {
+//     console.log(args); // ***** 第一个参数，若该属性为普通属性，则为原型对象；若为静态属性，则为构造函数。 方法装饰器也是如此！ 一共俩参数，打印了三个？？？？
+// }
+
+// // 参数装饰器
+// const ParamDecorator: ParameterDecorator = (...args: any[]) => {
+//     console.log(args); // 第三个参数为该参数的索引
+// }
+
+// class User {
+//     @PropDecorator
+//     public name: string | undefined = "test name"
+
+//     static test(name: string, id: number, @ParamDecorator isLock: boolean) {}
+// }
+
+
+
+
+// 属性访问器动态转换对象属性
+const LowerDecorator: PropertyDecorator = (...args: any[]) => {
+    let prop = args[1]
+    let value: string
+    // 形成一个闭包，value的值是一直存在的
+    Object.defineProperty(args[0],prop,{
+        get: () => value.toLowerCase(),
+        set: (v) => value = v
+    })
+}
+
+class User {
+    @LowerDecorator
+    public name: string | undefined
+}
+const user = new User()
+user.name = 'SfsfasQBZBHGJHSGJGFGH'
+console.log(user.name);

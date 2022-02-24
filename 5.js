@@ -2,6 +2,15 @@
 // ****************** decoration 装饰器 用的是时候需要tsc -w 监听整个文件夹 然后 tsc --init 生成配置文件 把配置文件中关于装饰器的注释取消掉,如下所示
 // "experimentalDecorators": true,                   /* Enable experimental support for TC39 stage 2 draft decorators. */
 // "emitDecoratorMetadata": true, 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 // ClassDecorator 类装饰器
 // const moveDecorator: ClassDecorator = (target: Function) => {
 //     console.log(target);
@@ -176,3 +185,54 @@
 //     }
 // }
 // new User().test()
+// 装饰器模拟网络请求
+// const RequestDecoratorFactory = (url: string): MethodDecorator => {
+//     return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//         let method = descriptor.value
+//         new Promise<any[]>(resolve => {
+//             setTimeout(() => {
+//                 resolve([{name: 'abc'}, {name: 'ddd'}])
+//             }, 2000);
+//         }).then(res => {
+//             method(`${url}返回结果${res.toString}`)
+//         })
+//     }
+// }
+// class User {
+//     @RequestDecoratorFactory('https://www.baidu.com')
+//     public all(users: any) {
+//         console.log(users);
+//     }
+// }
+// // 属性装饰器
+// const PropDecorator: PropertyDecorator = (...args: any[]) => {
+//     console.log(args); // ***** 第一个参数，若该属性为普通属性，则为原型对象；若为静态属性，则为构造函数。 方法装饰器也是如此！ 一共俩参数，打印了三个？？？？
+// }
+// // 参数装饰器
+// const ParamDecorator: ParameterDecorator = (...args: any[]) => {
+//     console.log(args); // 第三个参数为该参数的索引
+// }
+// class User {
+//     @PropDecorator
+//     public name: string | undefined = "test name"
+//     static test(name: string, id: number, @ParamDecorator isLock: boolean) {}
+// }
+// 属性访问器动态转换对象属性
+const LowerDecorator = (...args) => {
+    let prop = args[1];
+    let value;
+    // 形成一个闭包，value的值是一直存在的
+    Object.defineProperty(args[0], prop, {
+        get: () => value.toLowerCase(),
+        set: (v) => value = v
+    });
+};
+class User {
+}
+__decorate([
+    LowerDecorator,
+    __metadata("design:type", Object)
+], User.prototype, "name", void 0);
+const user = new User();
+user.name = 'SfsfasQBZBHGJHSGJGFGH';
+console.log(user.name);
