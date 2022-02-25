@@ -267,20 +267,84 @@
 
 
 // 属性访问器动态转换对象属性
-const LowerDecorator: PropertyDecorator = (...args: any[]) => {
-    let prop = args[1]
-    let value: string
-    // 形成一个闭包，value的值是一直存在的
-    Object.defineProperty(args[0],prop,{
-        get: () => value.toLowerCase(),
-        set: (v) => value = v
-    })
-}
+// const LowerDecorator: PropertyDecorator = (...args: any[]) => {
+//     let prop = args[1]
+//     let value: string
+//     // 形成一个闭包，value的值是一直存在的
+//     Object.defineProperty(args[0],prop,{
+//         get: () => value.toLowerCase(),
+//         set: (v) => value = v
+//     })
+// }
 
-class User {
-    @LowerDecorator
-    public name: string | undefined
-}
-const user = new User()
-user.name = 'SfsfasQBZBHGJHSGJGFGH'
-console.log(user.name);
+// class User {
+//     @LowerDecorator
+//     public name: string | undefined
+// }
+// const user = new User()
+// user.name = 'SfsfasQBZBHGJHSGJGFGH'
+// console.log(user.name);
+
+
+
+// 使用Reflect的defineMetadata与getMetadata验证配置数据
+// 装饰器执行顺序： 参数执行器 => 方法执行器
+// import "reflect-metadata"
+
+// const RequiredDecorator: ParameterDecorator = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+//     // console.log('requiredDecorator');
+//     // 哪些参数需要保存下来
+//     let requiredParams: number[] = []
+//     requiredParams.push(parameterIndex)
+
+//     // 用元数据记录一下
+//     Reflect.defineMetadata('dataName',requiredParams,target,propertyKey)
+// }
+
+// const ValidateDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//     // console.log('validateDecorator');
+
+//     let metadata = Reflect.getMetadata('dataName',target,propertyKey)
+//     console.log(metadata);
+// }
+
+// class User {
+//     @ValidateDecorator
+//     public find(name: string, @RequiredDecorator id: number) {
+//         console.log(id);
+//     }
+// }
+
+
+
+// 参数装饰器完成验证：传入的参数是否有遗漏
+// import "reflect-metadata"
+
+// const RequiredDecorator: ParameterDecorator = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+//     let requiredParams: number[] = []
+//     requiredParams.push(parameterIndex)
+//     Reflect.defineMetadata('myData',requiredParams,target,propertyKey)
+// }
+
+// const ValidateDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//     const method = descriptor.value
+//     descriptor.value = function() {
+//         const requiredParams: number[] = Reflect.getMetadata('myData',target,propertyKey) || []
+//         requiredParams.forEach(index => {
+//             if(index > arguments.length || arguments[index] === undefined){
+//                 throw new Error('请传递有必要的参数')
+//             }
+//         })
+//         console.log(arguments);
+//         return method.apply(this, arguments)
+//     }
+// }
+
+// class User {
+//     @ValidateDecorator
+//     public all(name: string, @RequiredDecorator id: number){
+//         console.log(name,id);
+//     }
+// }
+
+// new User().all('test', 99)

@@ -2,15 +2,6 @@
 // ****************** decoration 装饰器 用的是时候需要tsc -w 监听整个文件夹 然后 tsc --init 生成配置文件 把配置文件中关于装饰器的注释取消掉,如下所示
 // "experimentalDecorators": true,                   /* Enable experimental support for TC39 stage 2 draft decorators. */
 // "emitDecoratorMetadata": true, 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 // ClassDecorator 类装饰器
 // const moveDecorator: ClassDecorator = (target: Function) => {
 //     console.log(target);
@@ -218,21 +209,68 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 //     static test(name: string, id: number, @ParamDecorator isLock: boolean) {}
 // }
 // 属性访问器动态转换对象属性
-const LowerDecorator = (...args) => {
-    let prop = args[1];
-    let value;
-    // 形成一个闭包，value的值是一直存在的
-    Object.defineProperty(args[0], prop, {
-        get: () => value.toLowerCase(),
-        set: (v) => value = v
-    });
-};
-class User {
-}
-__decorate([
-    LowerDecorator,
-    __metadata("design:type", Object)
-], User.prototype, "name", void 0);
-const user = new User();
-user.name = 'SfsfasQBZBHGJHSGJGFGH';
-console.log(user.name);
+// const LowerDecorator: PropertyDecorator = (...args: any[]) => {
+//     let prop = args[1]
+//     let value: string
+//     // 形成一个闭包，value的值是一直存在的
+//     Object.defineProperty(args[0],prop,{
+//         get: () => value.toLowerCase(),
+//         set: (v) => value = v
+//     })
+// }
+// class User {
+//     @LowerDecorator
+//     public name: string | undefined
+// }
+// const user = new User()
+// user.name = 'SfsfasQBZBHGJHSGJGFGH'
+// console.log(user.name);
+// 使用Reflect的defineMetadata与getMetadata验证配置数据
+// 装饰器执行顺序： 参数执行器 => 方法执行器
+// import "reflect-metadata"
+// const RequiredDecorator: ParameterDecorator = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+//     // console.log('requiredDecorator');
+//     // 哪些参数需要保存下来
+//     let requiredParams: number[] = []
+//     requiredParams.push(parameterIndex)
+//     // 用元数据记录一下
+//     Reflect.defineMetadata('dataName',requiredParams,target,propertyKey)
+// }
+// const ValidateDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//     // console.log('validateDecorator');
+//     let metadata = Reflect.getMetadata('dataName',target,propertyKey)
+//     console.log(metadata);
+// }
+// class User {
+//     @ValidateDecorator
+//     public find(name: string, @RequiredDecorator id: number) {
+//         console.log(id);
+//     }
+// }
+// 参数装饰器完成验证：传入的参数是否有遗漏
+// import "reflect-metadata"
+// const RequiredDecorator: ParameterDecorator = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+//     let requiredParams: number[] = []
+//     requiredParams.push(parameterIndex)
+//     Reflect.defineMetadata('myData',requiredParams,target,propertyKey)
+// }
+// const ValidateDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+//     const method = descriptor.value
+//     descriptor.value = function() {
+//         const requiredParams: number[] = Reflect.getMetadata('myData',target,propertyKey) || []
+//         requiredParams.forEach(index => {
+//             if(index > arguments.length || arguments[index] === undefined){
+//                 throw new Error('请传递有必要的参数')
+//             }
+//         })
+//         console.log(arguments);
+//         return method.apply(this, arguments)
+//     }
+// }
+// class User {
+//     @ValidateDecorator
+//     public all(name: string, @RequiredDecorator id: number){
+//         console.log(name,id);
+//     }
+// }
+// new User().all('test', 99)
